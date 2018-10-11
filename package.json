@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "mpvue": "^1.0.11",
-    "vuex": "^3.0.1"
+    "node-sass": "^4.9.3",
+    "sass-loader": "^7.1.0",
+    "vuex": "^3.0.1",
+    "wafer2-client-sdk": "^2.1.0"
   },
   "devDependencies": {
     "mpvue-loader": "^1.1.2",

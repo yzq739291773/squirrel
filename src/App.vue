@@ -1,10 +1,7 @@
 <script>
-import {get} from './utils/index.js'
 export default {
   async created () {
     console.log('小程序启动了')
-    let res = await get('demo');
-    console.log(111,res)
   }
 }
 </script>
