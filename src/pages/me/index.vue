@@ -14,7 +14,7 @@
 
 import qcloud from 'wafer2-client-sdk'
 import YearProgress from '@/components/YearProgress'
-import {showSuccess} from '../../utils/index.js'
+import {get, post, showSuccess} from '../../utils/index.js'
 import config from '@/config'
 
 export default{
@@ -26,7 +26,8 @@ export default{
             userinfo: {
                 avatarUrl: 'http://image.shengxinjing.cn/rate/unlogin.png',
                 nickName: ''
-            }
+            },
+            code:''
         }
     },
     methods:{
@@ -44,34 +45,28 @@ export default{
             wx.setStorageSync('userinfo', res)
             this.userinfo = res
         },
-        login(){
-            wx.showToast({
-                title: '登录中',
-                icon: 'loading'
-            })
-            qcloud.setLoginUrl(config.loginUrl)
-            const session = qcloud.Session.get()
-            if (session) {
-                qcloud.loginWithCode({
-                    success: res => {
-                        console.log('没过期的登录', res)
-                        this.loginSuccess(res)
-                    },
-                    fail: err => {
-                        console.error(err)
+        async login(){
+           console.log('我被点击了')
+        wx.login({
+               success:async (res)=>{
+                   console.log('code')
+                   this.code = res.code
+                   console.log('请求地址',config.sentCode)
+                   wx.request({
+                    data:{code:res.code},
+                    methods:'GET',
+                    url: config.sentCode,
+                    success: function(res) {
+                        console.log('sentCode响应',res)
                     }
                 })
-            } else {
-                qcloud.login({
-                    success: res => {
-                        console.log('登录成功1', res)
-                        this.loginSuccess(res)
-                    },
-                    fail: err => {
-                        console.error(2,err)
-                    }
-                })
-            }
+                    
+               },
+               fail:(error)=>{
+                   console.log('获取code失败',error)
+               }
+           })
+          
         },
         onShow () {
             wx.showShareMenu()
@@ -79,6 +74,9 @@ export default{
             if (userinfo) {
             this.userinfo = userinfo
             }
+        },
+        getUserInfo (e) {
+            console.log(11,e)
         }
     }
 }
