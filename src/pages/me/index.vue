@@ -12,7 +12,6 @@
 
 <script>
 
-import qcloud from 'wafer2-client-sdk'
 import YearProgress from '@/components/YearProgress'
 import {get, post, showSuccess} from '../../utils/index.js'
 import config from '@/config'
@@ -47,7 +46,7 @@ export default{
         },
         async login(){
            console.log('我被点击了')
-        wx.login({
+            wx.login({
                success:async (res)=>{
                    console.log('code')
                    this.code = res.code
@@ -75,9 +74,6 @@ export default{
             this.userinfo = userinfo
             }
         },
-        getUserInfo (e) {
-            console.log(11,e)
-        }
     }
 }
 </script>
