@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="userinfo" >
-      <img :src="userinfo.avatarUrl" alt="">
-      <p>{{userinfo.nickName}}</p>
+      <img :src="userInfo.avatarUrl" alt="">
+      <p>{{userInfo.nickName}}</p>
     </div>
     <YearProgress></YearProgress>
-    <button v-if='userinfo.openId' @click='scanBook' class='btn'>添加图书</button>
+    <button v-if='openId' @click='scanBook' class='btn'>添加图书</button>
     <button v-else open-type="getUserInfo" lang="zh_CN" class='btn' @getuserinfo="login">点击登录</button>
   </div>
 </template>
@@ -20,9 +20,14 @@ export default{
     components: {
         YearProgress
     },
+    created() {
+        this.userInfo = wx.getStorageSync('userInfo')
+        this.openId = wx.getStorageSync('openid')
+    },
     data () {
         return {
-            userinfo: {
+            openId:'',
+            userInfo: {
                 avatarUrl: 'http://image.shengxinjing.cn/rate/unlogin.png',
                 nickName: ''
             },
@@ -45,27 +50,41 @@ export default{
             this.userinfo = res
         },
         async login(){
-           console.log('我被点击了')
-            wx.login({
-               success:async (res)=>{
-                   console.log('code')
-                   this.code = res.code
-                   console.log('请求地址',config.sentCode)
-                   wx.request({
-                    data:{code:res.code},
-                    methods:'GET',
-                    url: config.sentCode,
-                    success: function(res) {
-                        console.log('sentCode响应',res)
+            let user = wx.getStorageSync('userInfo')
+            if(!user){
+                // 获取临时凭证code
+                wx.login({
+                    success:async (res)=>{
+                        console.log('code')
+                        this.code = res.code
+                        //    发送code到开发者服务器，从而通过开发者服务器获得openid
+                        wx.request({
+                            data:{code:res.code},
+                            methods:'GET',
+                            url: config.sentCode,
+                            success: (res)=> {
+                                console.log('sentCode响应',res)
+                                wx.setStorageSync('openid', res.data.data.openid)
+                                wx.getUserInfo({
+                                    success:(res)=>{
+                                        console.log('用户信息', res)
+                                        wx.setStorageSync('userInfo', res.userInfo)
+                                        this.userInfo = res.userInfo
+                                        showSuccess('登陆成功')
+                                    },
+                                    fail:(err)=>{
+                                        console.log('获取用户信息失败',err)
+                                    }
+                                })
+                            }
+                        })
+                            
+                    },
+                    fail:(error)=>{
+                        console.log('获取code失败',error)
                     }
                 })
-                    
-               },
-               fail:(error)=>{
-                   console.log('获取code失败',error)
-               }
-           })
-          
+            }
         },
         onShow () {
             wx.showShareMenu()

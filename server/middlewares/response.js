@@ -3,7 +3,7 @@ const debug = require('debug')('koa-weapp-demo')
 /**
  * 响应处理模块
  */
-module.exports = async function (ctx, next) {
+module.exports = async function(ctx, next) {
     try {
         // 调用下一个 middleware
         await next()
@@ -15,6 +15,7 @@ module.exports = async function (ctx, next) {
             code: ctx.state.code !== undefined ? ctx.state.code : 0,
             data: ctx.state.data !== undefined ? ctx.state.data : {}
         }
+        console.log('111', ctx.body)
     } catch (e) {
         // catch 住全局的错误信息
         debug('Catch Error: %o', e)
