@@ -36,12 +36,20 @@ export default{
         }
     },
     methods:{
+        async addBooks(isbn){
+            console.log(isbn)
+            const res = await post('/weapp/addbook',{
+                isbn,
+                openid:this.openid
+            })
+            console.log('添加图书请求')
+        },
         scanBook () {
             wx.scanCode({
                 success: (res) => {
-                if (res.result) {
-                    console.log(res.result)
-                }
+                    if (res.result) {
+                        this.addBooks(res.result)
+                    }
                 }
             })
         },

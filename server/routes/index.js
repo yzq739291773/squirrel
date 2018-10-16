@@ -33,5 +33,6 @@ router.get('/message', controllers.message.get)
 router.post('/message', controllers.message.post)
 router.get('/demo', controllers.demo)
 router.get('/sentCode', controllers.sentCode)
+router.post('/addbook', controllers.addbook)
 
 module.exports = router

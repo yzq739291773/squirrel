@@ -6,17 +6,19 @@ export function get(url, data) {
     return request(url, 'GET', data)
 }
 export function post(url, data) {
+    console.log(1)
     return request(url, 'POST', data)
 }
 
 function request(url, method, data, header = {}) {
+    console.log(2)
     return new Promise((resolve, reject) => {
         wx.request({
             data,
             method,
             header,
             url: config.host + url,
-            success: function(res) {
+            success: (res) => {
                 if (res.data.code === 0) {
                     resolve(res.data.data)
                 } else {
