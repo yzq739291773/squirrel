@@ -11,13 +11,21 @@ module.exports = async(ctx) => {
                 js_code: code,
                 grant_type: 'authorization_code'
             }
-        }).then((response) => {
+        }).then(async(response) => {
             console.log('服务端请求响应1', response.data);
-            ctx.state = {
-                code: 0,
-                data: response.data
+            let { openid, session_key } = response.data
+            try {
+                await mysql('csessioninfo').insert({
+                    open_id: openid,
+                    session_key
+                })
+                ctx.state = {
+                    code: 0,
+                    data: response.data
+                }
+            } catch (e) {
+                console.log('数据库写入失败')
             }
-            console.log('响应客户端', ctx.state)
         })
         .catch((error) => {
             console.log(11, error);

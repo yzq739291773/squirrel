@@ -5,7 +5,7 @@
       <p>{{userInfo.nickName}}</p>
     </div>
     <YearProgress></YearProgress>
-    <button v-if='openId' @click='scanBook' class='btn'>添加图书</button>
+    <button v-if='openid' @click='scanBook' class='btn'>添加图书</button>
     <button v-else open-type="getUserInfo" lang="zh_CN" class='btn' @getuserinfo="login">点击登录</button>
   </div>
 </template>
@@ -22,14 +22,15 @@ export default{
     },
     created() {
         this.userInfo = wx.getStorageSync('userInfo')
-        this.openId = wx.getStorageSync('openid')
+        this.openid = wx.getStorageSync('openid')
     },
     data () {
         return {
-            openId:'',
+            openid:'',
             userInfo: {
                 avatarUrl: 'http://image.shengxinjing.cn/rate/unlogin.png',
-                nickName: ''
+                nickName: '',
+                openid:''
             },
             code:''
         }
@@ -65,9 +66,11 @@ export default{
                             success: (res)=> {
                                 console.log('sentCode响应',res)
                                 wx.setStorageSync('openid', res.data.data.openid)
+                                this.openid = res.data.data.openid
                                 wx.getUserInfo({
                                     success:(res)=>{
                                         console.log('用户信息', res)
+                                        // res.userinfo.openid = this.openid
                                         wx.setStorageSync('userInfo', res.userInfo)
                                         this.userInfo = res.userInfo
                                         showSuccess('登陆成功')
