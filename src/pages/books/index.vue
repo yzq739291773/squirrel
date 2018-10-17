@@ -23,6 +23,7 @@ export default {
     },
     onPullDownRefresh(){
         this.getList(true)
+        this.getTop()
     },
      onReachBottom(){
         if(!this.more){
@@ -33,7 +34,8 @@ export default {
         this.getList()
     },
     mounted(){
-        this.getList()
+        this.getList(true)
+        this.getTop()
     },
     methods:{
         async getList(init){
@@ -54,6 +56,10 @@ export default {
                 this.books = this.books.concat(books.list)
             }
             wx.hideNavigationBarLoading()
+        },
+        async getTop(){
+            const tops = await get('/weapp/top')
+            this.tops = tops.list
         }
     }
 
