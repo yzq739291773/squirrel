@@ -1,5 +1,8 @@
 <template>
-  <div class="book-card">
+<a :href="detailUrl">
+  <!-- 同样可以绑定click 用navigateTo来跳转 -->
+  <!-- @click="navigate" -->
+  <div  class="book-card">
     <div class="thumb" @click.stop="preview">
       <img :src="book.image" 
             class="img"
@@ -38,6 +41,7 @@
 
     </div>
   </div>
+</a>
 </template>
 
 <script>
@@ -47,13 +51,24 @@ export default {
   components:{
     Rate
   },
+  computed:{
+    detailUrl(){
+      return '/pages/detail/main?id='+this.book.id
+    }
+  },
   data(){
     return{
 
     }
   },
   methods:{
-
+    // 备用 click 的方式触发
+    navigate(){
+      console.log('跳转',this.detailUrl)
+      wx.navigateTo({
+        url:this.detailUrl
+      })
+    }
   }
 }
 </script>

@@ -2,6 +2,7 @@
     "pages": [
         "pages/books/main",
         "pages/me/main",
+        "pages/detail/main",
         "pages/comments/main"
     ],
     "window": {
