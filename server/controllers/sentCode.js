@@ -3,7 +3,8 @@ const config = require('../config')
 const { mysql } = require('../qcloud')
     // https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
 module.exports = async(ctx) => {
-    const code = ctx.query.code
+    console.log(111111, ctx.query)
+    const { code, userInfo } = ctx.query
     await axios.get('https://api.weixin.qq.com/sns/jscode2session', {
             params: {
                 appid: config.appId,
@@ -13,11 +14,13 @@ module.exports = async(ctx) => {
             }
         }).then(async(response) => {
             console.log('服务端请求响应1', response.data);
+            console.log(22, userInfo)
             let { openid, session_key } = response.data
             try {
                 await mysql('csessioninfo').insert({
                     open_id: openid,
-                    session_key
+                    session_key,
+                    user_info: userInfo
                 })
                 ctx.state = {
                     code: 0,

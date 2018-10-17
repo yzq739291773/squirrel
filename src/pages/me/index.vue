@@ -13,7 +13,7 @@
 <script>
 
 import YearProgress from '@/components/YearProgress'
-import {get, post, showSuccess} from '../../utils/index.js'
+import {get, post, showSuccess, showModal} from '../../utils/index.js'
 import config from '@/config'
 
 export default{
@@ -42,6 +42,7 @@ export default{
                 isbn,
                 openid:this.openid
             })
+            showModal('添加成功',`${res.title}添加成功`)
             console.log('添加图书请求')
         },
         scanBook () {
@@ -53,11 +54,6 @@ export default{
                 }
             })
         },
-        loginSuccess (res) {
-            showSuccess('登录成功')
-            wx.setStorageSync('userinfo', res)
-            this.userinfo = res
-        },
         async login(){
             let user = wx.getStorageSync('userInfo')
             if(!user){
@@ -66,29 +62,32 @@ export default{
                     success:async (res)=>{
                         console.log('code')
                         this.code = res.code
-                        //    发送code到开发者服务器，从而通过开发者服务器获得openid
-                        wx.request({
-                            data:{code:res.code},
-                            methods:'GET',
-                            url: config.sentCode,
-                            success: (res)=> {
-                                console.log('sentCode响应',res)
-                                wx.setStorageSync('openid', res.data.data.openid)
-                                this.openid = res.data.data.openid
-                                wx.getUserInfo({
-                                    success:(res)=>{
-                                        console.log('用户信息', res)
-                                        // res.userinfo.openid = this.openid
-                                        wx.setStorageSync('userInfo', res.userInfo)
-                                        this.userInfo = res.userInfo
-                                        showSuccess('登陆成功')
+                        // 获取用户信息
+                        wx.getUserInfo({
+                            success:(res)=>{
+                                console.log('用户信息', res)
+                                wx.setStorageSync('userInfo', res.userInfo)
+                                this.userInfo = res.userInfo
+                                //   发送code到开发者服务器，从而通过开发者服务器获得openid
+                                wx.request({
+                                    data:{
+                                        code:this.code,
+                                        userInfo:JSON.stringify(this.userInfo) 
                                     },
-                                    fail:(err)=>{
-                                        console.log('获取用户信息失败',err)
+                                    methods:'GET',
+                                    url: config.sentCode,
+                                    success: (res)=> {
+                                        wx.setStorageSync('openid', res.data.data.openid)
+                                        this.openid = res.data.data.openid
+                                        showSuccess('登陆成功')
                                     }
                                 })
+                            },
+                            fail:(err)=>{
+                                console.log('获取用户信息失败',err)
                             }
                         })
+                        
                             
                     },
                     fail:(error)=>{
