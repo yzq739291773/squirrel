@@ -1,5 +1,6 @@
 <template>
     <div>
+        <TopSwiper :tops='tops'></TopSwiper>
         <Card :key="book.id" v-for="book in books" :book="book"></Card>
         <p class='text-footer' v-if='!more'>
             没有更多数据
@@ -10,15 +11,18 @@
 <script>
 import {get} from '../../utils/index.js'
 import Card from '@/components/card.vue'
+import TopSwiper from '@/components/TopSwiper.vue'
 export default {
     components:{
-        Card
+        Card,
+        TopSwiper
     },
     data(){
         return {
             books:[],
             page:0,
             more:true,
+            tops:[]
         }
     },
     onPullDownRefresh(){
