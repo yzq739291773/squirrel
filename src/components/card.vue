@@ -68,6 +68,12 @@ export default {
       wx.navigateTo({
         url:this.detailUrl
       })
+    },
+    preview(){
+       wx.previewImage({
+        current:this.book.image,
+        urls:[this.book.image]
+      })
     }
   }
 }
