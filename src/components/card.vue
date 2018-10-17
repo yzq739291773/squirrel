@@ -9,7 +9,8 @@
     <div class="detail">
       <div class="row text-primary">
         <div class="right">
-          {{book.rate}} <Rate :value='book.rate'></Rate>
+          {{book.rate}} 
+          <Rate :value='book.rate'></Rate>
         </div>
         <div class="left">
           {{book.title}}
@@ -40,10 +41,11 @@
 </template>
 
 <script>
+import Rate from '@/components/Rate.vue'
 export default {
   props: ['book'],
   components:{
-
+    Rate
   },
   data(){
     return{
