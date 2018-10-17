@@ -16,14 +16,20 @@ export default {
             books:[]
         }
     },
+    onPullDownRefresh(){
+        this.getList(true)
+    },
     mounted(){
         console.log('我被挂载了')
         this.getList()
     },
     methods:{
         async getList(){
+            wx.showNavigationBarLoading()
             const books = await get('/weapp/booklist',{})
             this.books= books.list
+            wx.stopPullDownRefresh()
+            wx.hideNavigationBarLoading()
         }
     }
 
