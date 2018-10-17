@@ -1,6 +1,9 @@
 <template>
     <div>
         <Card :key="book.id" v-for="book in books" :book="book"></Card>
+        <p class='text-footer' v-if='!more'>
+            没有更多数据
+        </p>
     </div>
 </template>
 
@@ -13,22 +16,43 @@ export default {
     },
     data(){
         return {
-            books:[]
+            books:[],
+            page:0,
+            more:true,
         }
     },
     onPullDownRefresh(){
         this.getList(true)
     },
+     onReachBottom(){
+        if(!this.more){
+            // 没有更多了
+            return false
+        }
+        this.page = this.page+1
+        this.getList()
+    },
     mounted(){
-        console.log('我被挂载了')
         this.getList()
     },
     methods:{
-        async getList(){
+        async getList(init){
+            if(init){
+                this.page = 0
+                this.more = true
+            }
             wx.showNavigationBarLoading()
-            const books = await get('/weapp/booklist',{})
-            this.books= books.list
-            wx.stopPullDownRefresh()
+            const books = await get('/weapp/booklist',{page:this.page})
+            if(books.list.length < 7 && this.page >0){
+                this.more = false
+            }
+            if(init){
+                this.books= books.list
+                wx.stopPullDownRefresh()
+            }else{
+                // 上拉加载
+                this.books = this.books.concat(books.list)
+            }
             wx.hideNavigationBarLoading()
         }
     }

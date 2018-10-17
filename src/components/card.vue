@@ -60,6 +60,7 @@ export default {
 
 <style lang='scss' scoped>
 .book-card{
+  // height: 300px;
   padding:5px;
   overflow: hidden;
   margin-top:5px;

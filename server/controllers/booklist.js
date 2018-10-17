@@ -1,8 +1,12 @@
 const { mysql } = require('../qcloud')
 module.exports = async(ctx) => {
+    const { page } = ctx.request.query
+    const size = 7
     const books = await mysql('books')
         .select('books.*', 'csessioninfo.user_info')
         .join('csessioninfo', 'books.openid', '=', 'csessioninfo.open_id')
+        .limit(size)
+        .offset(Number(page) * size)
         .orderBy('books.id', 'desc')
         // console.log('books', books)
     ctx.state.data = {
