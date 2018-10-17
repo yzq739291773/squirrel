@@ -1,7 +1,8 @@
 <template>
   <div>
     <bookinfo :info='info'></bookinfo>
-    <div class="comment">
+    <commentlist :comments="comments"></commentlist>
+    <div class="comment" v-if="showAdd">
       <textarea v-model='comment'
                 class='textarea'
                 :maxlength='100'
@@ -20,23 +21,39 @@
         评论
       </button>
     </div>
-  <div class='text-footer'>
-    未登录或者已经评论过啦
-  </div>
-  <button open-type='share' class="btn">转发给好友</button>
+    <div v-else class='text-footer'>
+      未登录或者已经评论过啦
+    </div>
+    <button open-type='share' class="btn">转发给好友</button>
   </div>
 </template>
 <script>
-import {get, post, showModel} from '@/utils'
+import {get, post, showModal} from '@/utils'
 import BookInfo from '@/components/BookInfo.vue'
+import CommentList from '@/components/CommentList.vue'
 export default {
   components: {
-    bookinfo:BookInfo
+    bookinfo:BookInfo,
+    commentlist:CommentList
+  },
+  computed: {
+    showAdd () {
+      // 没登录
+      if (!this.openid) {
+        return false
+      }
+      // 评论页面里查到有自己的openid
+      if (this.comments.filter(v => v.openid === this.openid).length) {
+        return false
+      }
+      return true
+    }
   },
   data(){
     return {
+      comments: [],
       bookid:'',
-      userinfo: {},
+      openid: '',
       info: {},
       comment: '',
       location: '',
@@ -44,6 +61,31 @@ export default {
     }
   },
   methods:{
+    async addComment () {
+      if (!this.comment) {
+        return
+      }
+      // 评论内容 手机型号  地理位置 图书id 用户的openid
+      const data = {
+        openid: this.openid,
+        bookid: this.bookid,
+        comment: this.comment,
+        phone: this.phone,
+        location: this.location
+      }
+      try {
+        await post('/weapp/addcomment', data)
+        this.comment = ''
+        this.getComments()
+      } catch (e) {
+        showModal('失败', e.msg)
+      }
+    },
+    async getComments () {
+      const comments = await get('/weapp/commentlist', {bookid: this.bookid})
+      console.log('comments', comments)
+      this.comments = comments.list || []
+    },
     async getDetail(){
       const info = await get('/weapp/bookdetail',{id:this.bookid})
        wx.setNavigationBarTitle({
@@ -97,6 +139,12 @@ export default {
   mounted(){
     this.bookid = this.$root.$mp.query.id
     this.getDetail()
+    this.getComments()
+    const openid = wx.getStorageSync('openid')
+    console.log('openid',openid)
+    if (openid) {
+      this.openid = openid
+    }
   }
 }
 </script>
