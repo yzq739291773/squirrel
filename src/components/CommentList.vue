@@ -6,6 +6,7 @@
     <div class="comment"
         v-for='comment in comments' 
         :key='comment.id'
+        @click='handleClick(comment)'
         >
       <div class="user">
         <div class="inline">
@@ -33,12 +34,23 @@
 
 <script>
 export default {
-  props: ['comments']
+
+  props: ['comments','type'],
+  methods:{
+    handleClick(comment){
+      if(this.type === 'user'){
+        wx.navigateTo({
+          url:'/pages/detail/main?id='+comment.bookid
+        })
+      }
+    }
+  }
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .comment-list{
+    width: 750rpx;
   background:#eee;
   font-size:14px;
   .comment{
@@ -57,11 +69,8 @@ export default {
           border-radius: 50%;
         }
       }
-
     }
-
   }
-
 }
 </style>
 

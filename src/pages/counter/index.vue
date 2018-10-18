@@ -31,7 +31,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .counter-warp {
   text-align: center;
   margin-top: 100px;

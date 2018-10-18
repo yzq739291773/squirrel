@@ -30,7 +30,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .log-list {
   display: flex;
   flex-direction: column;

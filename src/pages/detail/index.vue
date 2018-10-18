@@ -148,7 +148,7 @@ export default {
   }
 }
 </script>
-<style lang='scss'>
+<style lang='scss' scoped>
 .comment{
   margin-top:10px;
   .textarea{
