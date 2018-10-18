@@ -6,7 +6,7 @@
     </div>
     <YearProgress></YearProgress>
     <button v-if='openid' @click='scanBook' class='btn'>添加图书</button>
-    <button v-else open-type="getUserInfo" lang="zh_CN" class='btn' @getuserinfo="login">点击登录</button>
+    <button v-else open-type="getUserInfo" lang="zh_CN" class='btn' @getuserinfo="login">授权登录</button>
   </div>
 </template>
 
@@ -55,8 +55,8 @@ export default{
             })
         },
         async login(){
-            let user = wx.getStorageSync('userInfo')
-            if(!user){
+            let openid = wx.getStorageSync('openid')
+            if(!openid){
                 // 获取临时凭证code
                 wx.login({
                     success:async (res)=>{
@@ -77,6 +77,7 @@ export default{
                                     methods:'GET',
                                     url: config.sentCode,
                                     success: (res)=> {
+                                        console.log('sentcode结果',res)
                                         wx.setStorageSync('openid', res.data.data.openid)
                                         this.openid = res.data.data.openid
                                         showSuccess('登陆成功')
@@ -97,10 +98,15 @@ export default{
             }
         },
         onShow () {
+            console.log('个人中心页面显示了')
             wx.showShareMenu()
             let userinfo = wx.getStorageSync('userinfo')
+            let openid = wx.getStorageSync('openid')
             if (userinfo) {
-            this.userinfo = userinfo
+                this.userinfo = userinfo
+            }
+            if (openid) {
+                this.openid = openid
             }
         },
     }

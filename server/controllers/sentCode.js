@@ -17,17 +17,39 @@ module.exports = async(ctx) => {
             console.log(22, userInfo)
             let { openid, session_key } = response.data
             try {
-                await mysql('csessioninfo').insert({
-                    open_id: openid,
-                    session_key,
-                    user_info: userInfo
-                })
-                ctx.state = {
-                    code: 0,
-                    data: response.data
+                let exist = await mysql('csessioninfo').where({
+                    open_id: openid
+                }).select('session_key', "open_id").first()
+                console.log('判断是否存在该数据', exist)
+                if (exist) {
+                    console.log('存在就更新，并返回已存在的结果')
+                    await mysql('csessioninfo').where('open_id', openid)
+                        .update({
+                            session_key
+                        })
+                    ctx.state = {
+                        code: 0,
+                        data: {
+                            openid: exist.open_id,
+                            session_key: exist.session_key
+                        }
+                    }
+                } else {
+                    console.log('不存在就存入')
+                    await mysql('csessioninfo').insert({
+                        open_id: openid,
+                        session_key,
+                        user_info: userInfo
+                    })
+                    ctx.state = {
+                        code: 0,
+                        data: response.data
+                    }
                 }
+
+
             } catch (e) {
-                console.log('数据库写入失败')
+                console.log('数据库写入失败', e)
             }
         })
         .catch((error) => {
